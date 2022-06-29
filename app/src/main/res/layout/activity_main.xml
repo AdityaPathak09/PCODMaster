@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp"
+    tools:context=".MainActivity">
+
+    <EditText
+        android:id="@+id/divName"
+        android:layout_width="159dp"
+        android:textColor="@color/white"
+        android:layout_height="55dp"
+        android:layout_marginTop="128dp"
+        android:text="PCODDevice"
+        android:textAlignment="textStart"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="@+id/hr"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/editTextTextPersonName4"
+        android:layout_width="166dp"
+        android:layout_height="37dp"
+        android:autofillHints=""
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="Enter Device Name"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/divName"
+        app:layout_constraintEnd_toStartOf="@+id/hr"
+        app:layout_constraintHorizontal_bias="0.8"
+        app:layout_constraintStart_toStartOf="@+id/editTextTextPersonName"
+        app:layout_constraintTop_toTopOf="@+id/divName"
+        app:layout_constraintVertical_bias="1.0"
+        tools:ignore="TouchTargetSizeCheck" />
+
+    <Button
+        android:id="@+id/ecgBut"
+        android:layout_width="164dp"
+        android:layout_height="52dp"
+        android:layout_marginStart="11dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginBottom="114dp"
+        android:text="@string/ecg"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/tempBut"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName3" />
+
+    <Button
+        android:id="@+id/connectBut"
+        android:layout_width="164dp"
+        android:layout_height="52dp"
+        android:text="Connect"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/editTextTextPersonName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName4"
+        app:layout_constraintVertical_bias="0.611" />
+
+    <Button
+        android:id="@+id/tempBut"
+        android:layout_width="167dp"
+        android:layout_height="52dp"
+        android:layout_marginBottom="114dp"
+        android:text="@string/temp"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/ecgBut"
+        app:layout_constraintTop_toBottomOf="@+id/ambtemp" />
+
+    <EditText
+        android:id="@+id/ambtemp"
+        android:layout_width="160dp"
+        android:layout_height="50dp"
+        android:textColor="@color/white"
+        android:layout_marginBottom="92dp"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/tempBut"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/editTextTextPersonName3"
+        app:layout_constraintTop_toBottomOf="@+id/temp" />
+
+    <EditText
+        android:id="@+id/temp"
+        android:layout_width="160dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="30dp"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/ambtemp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/editTextTextPersonName2"
+        app:layout_constraintTop_toBottomOf="@+id/hr" />
+
+    <EditText
+        android:id="@+id/hr"
+        android:layout_width="160dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="349dp"
+        android:layout_marginBottom="31dp"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/temp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/editTextTextPersonName"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/editTextTextPersonName"
+        android:layout_width="160dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="11dp"
+        android:layout_marginTop="349dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginBottom="31dp"
+        android:textColor="@color/white"
+        android:autofillHints=""
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="@string/heart_rate"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/editTextTextPersonName2"
+        app:layout_constraintEnd_toStartOf="@+id/hr"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="TouchTargetSizeCheck" />
+
+    <TextView
+        android:id="@+id/editTextTextPersonName2"
+        android:layout_width="160dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="11dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginBottom="30dp"
+        android:autofillHints=""
+        android:ems="10"
+        android:textColor="@color/white"
+        android:inputType="textPersonName"
+        android:text="@string/tempreature"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/editTextTextPersonName3"
+        app:layout_constraintEnd_toStartOf="@+id/temp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName"
+        tools:ignore="TouchTargetSizeCheck" />
+
+    <TextView
+        android:id="@+id/editTextTextPersonName3"
+        android:layout_width="160dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="11dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginBottom="92dp"
+        android:autofillHints=""
+        android:textColor="@color/white"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="@string/ambient_temp"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/ecgBut"
+        app:layout_constraintEnd_toStartOf="@+id/ambtemp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName2"
+        tools:ignore="TouchTargetSizeCheck" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="editTextTextPersonName3,editTextTextPersonName,ambtemp,hr,temp,editTextTextPersonName2"
+        app:layout_constraintBottom_toTopOf="@+id/group2"
+        app:layout_constraintEnd_toStartOf="@+id/group2"
+        app:layout_constraintStart_toStartOf="@+id/group2"
+        app:layout_constraintTop_toTopOf="@+id/group2" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/group2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        app:constraint_referenced_ids="editTextTextPersonName3,editTextTextPersonName,ambtemp,hr,temp,editTextTextPersonName2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>
