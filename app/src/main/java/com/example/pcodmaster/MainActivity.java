@@ -1,5 +1,6 @@
 package com.example.pcodmaster;
 
+import androidx.annotation.BoolRes;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
@@ -8,6 +9,8 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.IInterface;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,6 +20,7 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.DecimalFormat;
 import java.util.Set;
 import java.util.UUID;
 
@@ -25,18 +29,14 @@ public class MainActivity extends AppCompatActivity {
     String name = "";
     String addressToConnect = "";
     BluetoothSocket bluetoothSocket = null;
-    OutputStream outputStream = null;
-    InputStream inputStream = null;
+    public OutputStream outputStream = null;
+    public InputStream inputStream = null;
 
-    public String recieveData()
+    public String recieveData(int packetCode)
     {
         String data = "";
 
         try {
-
-            inputStream.skip(inputStream.available());
-            byte dataof = (byte) inputStream.read();
-
             inputStream.skip(inputStream.available());
             int size = inputStream.read();
 
@@ -44,16 +44,33 @@ public class MainActivity extends AppCompatActivity {
             {
                 data = data + (char) inputStream.read();
             }
-            Toast.makeText(getApplicationContext(), data, Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getApplicationContext(), data, Toast.LENGTH_SHORT).show();
 
         } catch (IOException e) {
+            Log.e("Packet Error", "Packet Not Recieved: " + String.valueOf(packetCode));
             e.printStackTrace();
         }
 
         return data;
-
     }
 
+    public String recieveECG() throws IOException {
+        sendData((byte)1);
+        inputStream.skip(inputStream.available());
+        int packetCounter = inputStream.read();
+        String data = "";
+        for(int i = 0; i < packetCounter; i++){
+            data = data + recieveData(i+1);
+        }
+        return data;
+    }
+
+    public int heartRate() throws IOException {
+        sendData((byte)2);
+        inputStream.skip(inputStream.available());
+        int hr = inputStream.read();
+        return hr;
+    }
 
     public void sendData(byte instruction) throws IOException {
 //        System.out.println("Sending data");
@@ -63,11 +80,12 @@ public class MainActivity extends AppCompatActivity {
 
 
     @SuppressLint("MissingPermission")
-    public void connect(BluetoothDevice myDevice)
+    public boolean connect(BluetoothDevice myDevice)
     {
 
         final UUID mUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
         int counter = 0;
+        boolean ret = false;
         do {
             try {
 //                            System.out.println(myDevice.toString());
@@ -78,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
                 if(bluetoothSocket.isConnected())
                 {
                     Toast.makeText(this, "Connected to " +myDevice.getName(), Toast.LENGTH_SHORT).show();
+                    ret = true;
                 }
             } catch (IOException e) {
                 Toast.makeText(this, "Cannot connect to " +myDevice.getName() +". Please retry.", Toast.LENGTH_SHORT).show();
@@ -95,6 +114,8 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        return ret;
     }
 
     @SuppressLint("MissingPermission")
@@ -111,16 +132,19 @@ public class MainActivity extends AppCompatActivity {
         temp.setEnabled(false);
 
         Button connect = findViewById(R.id.connectBut);
+        Button camStream = findViewById(R.id.CamButton);
 
         TextView dispHr = findViewById(R.id.hr);
-        TextView dispTemp = findViewById(R.id.temp);
-        TextView dispAmbtemp = findViewById(R.id.ambtemp);
+        EditText dispTemp = findViewById(R.id.temp);
+        EditText dispAmbtemp = findViewById(R.id.ambtemp);
         TextView getName = findViewById(R.id.divName);
 
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         bluetoothAdapter.startDiscovery();
 
         Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
+
+        final ExternalThread externalThread = new ExternalThread();
 
         connect.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -149,10 +173,11 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
 
-                    connect(myDevice);
-                    ecg.setEnabled(true);
-                    temp.setEnabled(true);
-
+                    if(connect(myDevice)){
+                        ecg.setEnabled(true);
+                        temp.setEnabled(true);
+                        externalThread.run();
+                    }
                 }
                 else
                 {
@@ -161,12 +186,23 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        camStream.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intent = new Intent(getApplicationContext(), stream.class);
+//                    System.out.println("Starting Activity");
+                startActivity(intent);
+            }
+        });
+
         ecg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 try {
-                    sendData((byte)1);
-                    recieveData();
+                    String ecg = recieveECG();
+                    int hr = heartRate();
+                    dispHr.setText(ecg +" " +String.valueOf(hr));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -177,10 +213,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try {
-                    sendData((byte)2);
+                    sendData((byte)3);
 
                     String temps;
-                    for(int i = 0; i < 9; i ++)
+
+                    for(int i = 0; i < 9; i ++) //simple delay for 9 seconds
                     {
                         try {
                             Thread.sleep(1000);
@@ -188,7 +225,8 @@ public class MainActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                     }
-                    String temp = recieveData();
+
+                    String temp = recieveData(0);
 
                     String[] parts = temp.split(",");
                     temp = parts[0];
@@ -206,3 +244,42 @@ public class MainActivity extends AppCompatActivity {
 
     }
 }
+
+class ExternalThread extends Thread{
+
+    Boolean kill = false;
+
+
+    MainActivity mainActivity = new MainActivity();
+    OutputStream outputStream = mainActivity.outputStream ;
+    InputStream inputStream = mainActivity.inputStream;
+
+
+    String receiveData = null;
+    @Override
+    public void run(){
+
+        while (true)
+        {
+            receiveData = mainActivity.recieveData(0);
+            if(receiveData != null){
+                break;
+            }
+            else{
+                //Add Functionality
+            }
+
+            if(kill){
+                break;
+            }
+
+            try {
+                sleep(300);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+}
+
