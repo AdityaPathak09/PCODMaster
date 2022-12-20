@@ -194,12 +194,25 @@ public class MainActivity extends AppCompatActivity {
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+//                ArrayList<Integer> ecg = new ArrayList<Integer>();
+//                for(int i = 0; i < 100; i ++){
+//                    ecg.add((int) (100 * Math.sin((double) i)));
+//                }
+//                Toast.makeText(getApplicationContext(), ecg.toString(), Toast.LENGTH_SHORT).show();
+//
+//                Intent intent = new Intent(MainActivity.this, ECGChart.class);
+//                intent.putIntegerArrayListExtra("list", ecg);
+//                startActivity(intent);
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 byte data = Byte.parseByte(sendBox.getText().toString());
                 try {
                     sendData(data);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                new CountDownTimer(300, 10) {
 //                    public void onFinish() {
 //                        Toast.makeText(getApplicationContext(), "Reciving", Toast.LENGTH_SHORT).show();
@@ -290,7 +303,7 @@ public class MainActivity extends AppCompatActivity {
                     ArrayList<Integer> ecg = recieveECG();
 //                    recieveBox.setText(ecg.toString());
                     Intent intent = new Intent(MainActivity.this, ECGChart.class);
-                    intent.putExtra("list", ecg);
+                    intent.putIntegerArrayListExtra("list", ecg);;
                     startActivity(intent);
 
                 } catch (IOException e) {
@@ -343,8 +356,6 @@ class ExternalThread extends Thread{
     Boolean kill = false;
 
     MainActivity mainActivity = new MainActivity();
-//    OutputStream outputStream = mainActivity.outputStream ;
-//    InputStream inputStream = mainActivity.inputStream;
 
     String receiveData = null;
 
@@ -359,20 +370,15 @@ class ExternalThread extends Thread{
 
                 for(int i = 0; i < packetSize; i ++){
                     data[i] = (int) inputStream.read();
-
-//            Toast.makeText(getApplicationContext(), String.valueOf(data[i]), Toast.LENGTH_SHORT).show();
                 }
 
                 int k = 0;
                 for(int i = 0; i < packetSize; i+=3){
                     list.add(mainActivity.shifter(data[i], data[i+1], data[i+2]));
-//                    if(list.get(list.size()) >= 5000)
-//                        kill = true;
                 }
 
                 if(list.size() >= 6000)
                         kill = true;
-
         }
         return list;
     }
