@@ -2,14 +2,19 @@ package com.example.pcodmaster;
 
 import androidx.annotation.BoolRes;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.IInterface;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -21,6 +26,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -31,20 +39,40 @@ public class MainActivity extends AppCompatActivity {
     BluetoothSocket bluetoothSocket = null;
     public OutputStream outputStream = null;
     public InputStream inputStream = null;
+    EditText sendBox;
+    TextView recieveBox;
 
-    public String recieveData(int packetCode)
-    {
+    ExternalThread externalThread;
+
+    String inputData = "";
+
+    public MainActivity() {
+    }
+
+    public static int shifter(int msb_sample, int mid_sample, int lsb_sample) {
+        int temp = 0;
+        msb_sample = 0x00000003 & msb_sample;
+        msb_sample = msb_sample << 16;
+        temp = temp | msb_sample;
+        mid_sample = mid_sample << 8;
+        temp = temp | mid_sample;
+        temp = temp | lsb_sample;
+        temp = temp - 1;
+        temp = ~temp;
+        return temp;
+    }
+
+    public String recieveData(int packetCode) {
         String data = "";
 
         try {
-            inputStream.skip(inputStream.available());
+//            inputStream.skip(inputStream.available());
             int size = inputStream.read();
 
-            for(int i = 0; i < size; i ++)
-            {
+            for (int i = 0; i < size; i++) {
                 data = data + (char) inputStream.read();
             }
-//            Toast.makeText(getApplicationContext(), data, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Size: " + size, Toast.LENGTH_SHORT).show();
 
         } catch (IOException e) {
             Log.e("Packet Error", "Packet Not Recieved: " + String.valueOf(packetCode));
@@ -54,34 +82,37 @@ public class MainActivity extends AppCompatActivity {
         return data;
     }
 
-    public String recieveECG() throws IOException {
-        sendData((byte)1);
-        inputStream.skip(inputStream.available());
-        int packetCounter = inputStream.read();
-        String data = "";
-        for(int i = 0; i < packetCounter; i++){
-            data = data + recieveData(i+1);
-        }
-        return data;
+    public ArrayList<Integer> recieveECG() throws IOException {
+        outputStream.write((byte) 1);
+//        inputStream.skip(inputStream.available());
+        int packetCounter = inputStream.read();// = 3
+//        inputStream.skip(inputStream.available());
+        int packetSize = inputStream.read(); //  = 18
+
+//
+        externalThread.kill = false;
+        Toast.makeText(getApplicationContext(), "PacketSize: " + String.valueOf(packetSize), Toast.LENGTH_SHORT).show();
+
+        ArrayList<Integer> ret = externalThread.run(packetSize, inputStream);
+        Toast.makeText(getApplicationContext(), "Size: " + ret.size(), Toast.LENGTH_SHORT).show();
+        outputStream.write((byte) 2);
+        return ret;
     }
 
-    public int heartRate() throws IOException {
-        sendData((byte)2);
-        inputStream.skip(inputStream.available());
-        int hr = inputStream.read();
-        return hr;
-    }
+//    public int heartRate() throws IOException {
+//        sendData((byte)2);
+//        inputStream.skip(inputStream.available());
+//        int hr = inputStream.read() & 0xff;
+//        return hr;
+//    }
 
     public void sendData(byte instruction) throws IOException {
-//        System.out.println("Sending data");
         outputStream.write(instruction);
-//        System.out.println("data sent");
     }
 
 
     @SuppressLint("MissingPermission")
-    public boolean connect(BluetoothDevice myDevice)
-    {
+    public boolean connect(BluetoothDevice myDevice) {
 
         final UUID mUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
         int counter = 0;
@@ -93,25 +124,26 @@ public class MainActivity extends AppCompatActivity {
 //                            System.out.println(bluetoothSocket);
                 bluetoothSocket.connect();
 //                System.out.println(bluetoothSocket.isConnected());
-                if(bluetoothSocket.isConnected())
-                {
-                    Toast.makeText(this, "Connected to " +myDevice.getName(), Toast.LENGTH_SHORT).show();
-                    ret = true;
+                if (bluetoothSocket.isConnected()) {
+                    Toast.makeText(this, "Connected to " + myDevice.getName(), Toast.LENGTH_SHORT).show();
+
                 }
             } catch (IOException e) {
-                Toast.makeText(this, "Cannot connect to " +myDevice.getName() +". Please retry.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Cannot connect to " + myDevice.getName() + ". Please retry.", Toast.LENGTH_SHORT).show();
                 e.printStackTrace();
             }
             counter++;
         }
-        while(!bluetoothSocket.isConnected() && counter < 5);
+        while (!bluetoothSocket.isConnected() && counter < 5);
 
 
         try {
             outputStream = bluetoothSocket.getOutputStream();
             inputStream = bluetoothSocket.getInputStream();
+            ret = true;
 
         } catch (IOException e) {
+            Toast.makeText(getApplicationContext(), "bluetooth socket error", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
 
@@ -119,8 +151,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @SuppressLint("MissingPermission")
+
+    @Override
+    protected void onPause() {
+
+        super.onPause();
+        externalThread.kill = true;
+    }
+
+
+    @SuppressLint("MissingPermission")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        externalThread = new ExternalThread();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -134,17 +178,53 @@ public class MainActivity extends AppCompatActivity {
         Button connect = findViewById(R.id.connectBut);
         Button camStream = findViewById(R.id.CamButton);
 
+        Button send = findViewById(R.id.send);
+        send.setEnabled(false);
+
+        sendBox = findViewById(R.id.sendData);
+        recieveBox = findViewById(R.id.recieveData);
+
+
         TextView dispHr = findViewById(R.id.hr);
         EditText dispTemp = findViewById(R.id.temp);
         EditText dispAmbtemp = findViewById(R.id.ambtemp);
         TextView getName = findViewById(R.id.divName);
 
+
+        send.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                byte data = Byte.parseByte(sendBox.getText().toString());
+                try {
+                    sendData(data);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+//                new CountDownTimer(300, 10) {
+//                    public void onFinish() {
+//                        Toast.makeText(getApplicationContext(), "Reciving", Toast.LENGTH_SHORT).show();
+//                        try {
+//                            inputData = inputData + " " +String.valueOf(inputStream.read() & 0xff);
+//
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        }
+//                        recieveBox.setText(String.valueOf(inputData));
+//                    }
+//
+//                    public void onTick(long millisUntilFinished) {
+//                        // millisUntilFinished    The amount of time until finished.
+//                    }
+//                }.start();
+
+            }
+        });
+
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
         bluetoothAdapter.startDiscovery();
 
         Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
-
-        final ExternalThread externalThread = new ExternalThread();
 
         connect.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -152,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
                 BluetoothDevice myDevice = null;
                 name = getName.getText().toString();
 
-                Toast.makeText(getApplicationContext(), "Connecting to " +name, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Connecting to " + name, Toast.LENGTH_SHORT).show();
 
 //                textView.setText("");
 
@@ -176,7 +256,13 @@ public class MainActivity extends AppCompatActivity {
                     if(connect(myDevice)){
                         ecg.setEnabled(true);
                         temp.setEnabled(true);
-                        externalThread.run();
+                        send.setEnabled(true);
+                        try {
+                            outputStream.write((byte) 2);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+//                        externalThread.run();
                     }
                 }
                 else
@@ -200,9 +286,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try {
-                    String ecg = recieveECG();
-                    int hr = heartRate();
-                    dispHr.setText(ecg +" " +String.valueOf(hr));
+                    inputStream.skip(inputStream.available());
+                    ArrayList<Integer> ecg = recieveECG();
+//                    recieveBox.setText(ecg.toString());
+                    Intent intent = new Intent(MainActivity.this, ECGChart.class);
+                    intent.putExtra("list", ecg);
+                    startActivity(intent);
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -212,33 +302,36 @@ public class MainActivity extends AppCompatActivity {
         temp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                try {
-                    sendData((byte)3);
 
-                    String temps;
+                externalThread.kill = true;
 
-                    for(int i = 0; i < 9; i ++) //simple delay for 9 seconds
-                    {
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    String temp = recieveData(0);
-
-                    String[] parts = temp.split(",");
-                    temp = parts[0];
-                    temps = parts[1];
-
-                    dispTemp.setText(temp);
-                    dispAmbtemp.setText(temps);
-                    Toast.makeText(getApplicationContext(), "done", Toast.LENGTH_SHORT).show();
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    sendData((byte)2);
+//
+//                    String temps;
+//
+//                    for(int i = 0; i < 9; i ++) //simple delay for 9 seconds
+//                    {
+//                        try {
+//                            Thread.sleep(1000);
+//                        } catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//
+//                    String temp = recieveData(0);
+//
+//                    String[] parts = temp.split(",");
+//                    temp = parts[0];
+//                    temps = parts[1];
+//
+//                    dispTemp.setText(temp);
+//                    dispAmbtemp.setText(temps);
+//                    Toast.makeText(getApplicationContext(), "done", Toast.LENGTH_SHORT).show();
+//
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
             }
         });
 
@@ -249,37 +342,39 @@ class ExternalThread extends Thread{
 
     Boolean kill = false;
 
-
     MainActivity mainActivity = new MainActivity();
-    OutputStream outputStream = mainActivity.outputStream ;
-    InputStream inputStream = mainActivity.inputStream;
-
+//    OutputStream outputStream = mainActivity.outputStream ;
+//    InputStream inputStream = mainActivity.inputStream;
 
     String receiveData = null;
-    @Override
-    public void run(){
 
-        while (true)
-        {
-            receiveData = mainActivity.recieveData(0);
-            if(receiveData != null){
-                break;
-            }
-            else{
-                //Add Functionality
-            }
+    public ArrayList< Integer > run(int packetSize, InputStream inputStream) throws IOException {
 
-            if(kill){
-                break;
-            }
+            ArrayList<Integer> list = new ArrayList<Integer>();
+            inputStream.read();
 
-            try {
-                sleep(300);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            while(!kill){
+
+                int data[] = new int[packetSize];
+
+                for(int i = 0; i < packetSize; i ++){
+                    data[i] = (int) inputStream.read();
+
+//            Toast.makeText(getApplicationContext(), String.valueOf(data[i]), Toast.LENGTH_SHORT).show();
+                }
+
+                int k = 0;
+                for(int i = 0; i < packetSize; i+=3){
+                    list.add(mainActivity.shifter(data[i], data[i+1], data[i+2]));
+//                    if(list.get(list.size()) >= 5000)
+//                        kill = true;
+                }
+
+                if(list.size() >= 6000)
+                        kill = true;
+
         }
-
+        return list;
     }
 }
 
