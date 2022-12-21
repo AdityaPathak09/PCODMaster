@@ -36,7 +36,6 @@
     </LinearLayout>
 
     <TableLayout
-        android:id="@+id/tableLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -53,7 +52,6 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/deviceName"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="3"
@@ -105,7 +103,6 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/editTextTextPersonName"
                 android:layout_width="160dp"
                 android:layout_height="match_parent"
                 android:layout_weight="3"
@@ -132,7 +129,6 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/editTextTextPersonName2"
                 android:layout_width="160dp"
                 android:layout_height="match_parent"
                 android:layout_weight="3"
@@ -158,7 +154,6 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/editTextTextPersonName3"
                 android:layout_width="160dp"
                 android:layout_height="match_parent"
                 android:layout_weight="3"
