@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
         mid_sample = mid_sample << 8;
         temp = temp | mid_sample;
         temp = temp | lsb_sample;
+        temp = temp & 0x3FFFF;
 //        temp = temp - 1;
 //        temp = ~temp;
         return temp;
@@ -80,13 +81,13 @@ public class MainActivity extends AppCompatActivity {
 //        int packetCounter = inputStream.read();// = 3
 //        inputStream.skip(inputStream.available());
 //        inputStream.read();
-        int packetSize = inputStream.read(); //  = 18
+//        int packetSize = inputStream.read(); //  = 18
 
 //
 
-        Toast.makeText(getApplicationContext(), "PacketSize: " + packetSize, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getApplicationContext(), "PacketSize: " + packetSize, Toast.LENGTH_SHORT).show();
 
-        ret = externalThread.run(packetSize, inputStream);
+        ret = externalThread.run(inputStream, outputStream);
         outputStream.write((byte) 2);
         Toast.makeText(getApplicationContext(), "Size: " + ret.size(), Toast.LENGTH_SHORT).show();
 //        outputStream.write((byte) 2);
@@ -380,7 +381,7 @@ class ExternalThread extends Thread {
 
     String receiveData = null;
 
-    public ArrayList<Integer> run(int packetSize, InputStream inputStream) throws IOException {
+    public ArrayList<Integer> run(InputStream inputStream, OutputStream outputStream) throws IOException {
 
         ArrayList<Integer> list = new ArrayList<Integer>();
         inputStream.read();
@@ -397,9 +398,12 @@ class ExternalThread extends Thread {
 
             data.add(inputStream.read());
 
-            Log.e("values", String.valueOf(data.size()));
-            if (data.size() >= 600)
+//            Log.e("values", String.valueOf(data.size()));
+            if (data.size() >= 1000){
                 kill = true;
+                outputStream.write((byte) 2);
+            }
+
 
 //                int k = 0;
 //                for(int i = 0; i < packetSize; i+=3){
@@ -424,17 +428,17 @@ class ExternalThread extends Thread {
 //                        kill = true;
         }
 
-
-        Log.e("data", data.toString());
+//        Log.e("data", data.toString());
         int k = 0;
-        while (k <= data.size() - 3) {
-            if (data.get(k) == 0xB0 && data.get(k + 3) == 0xB0) {
+        while (k <= data.size() - 4) {
+            if ((data.get(k) >= 0xB0 && data.get(k) <= 0xB3) && (data.get(k+3) >= 0xB0 || data.get(k+3) <= 0xB3) ) {
                 list.add(MainActivity.shifter(data.get(k), data.get(k + 1), data.get(k + 2)));
                 k += 3;
             } else {
                 k++;
             }
         }
+        Log.e("data", list.toString());
         data.clear();
         return list;
     }
