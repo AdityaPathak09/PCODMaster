@@ -26,8 +26,9 @@ public class stream extends AppCompatActivity {
         webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
         webView.setScrollbarFadingEnabled(false);
 //        System.out.println("Wifi State: " +wifiManager.getWifiState());
-        String url = "http://192.168.194.147/mjpeg/1";
 //        String url = "https://Instagram.com";
+//        String url = "http://192.168.194.147/mjpeg/1";
+        String url = "http://192.168.178.203/mjpeg/1";
         webView.loadUrl(url); //put url
     }
 

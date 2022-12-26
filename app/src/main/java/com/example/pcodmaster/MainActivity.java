@@ -53,6 +53,20 @@ public class MainActivity extends AppCompatActivity {
         return temp;
     }
 
+    public static int shifterPPG(int msb_sample, int mid_sample, int lsb_sample) {
+        int temp = 0;
+//        msb_sample = 0x00000003 & msb_sample;
+        msb_sample = msb_sample << 16;
+        temp = temp | msb_sample;
+        mid_sample = mid_sample << 8;
+        temp = temp | mid_sample;
+        temp = temp | lsb_sample;
+        temp = temp & 0xFFFFF;
+//        temp = ~temp;
+//        temp = temp + 0x01;
+        return temp;
+    }
+
     public String recieveData(int packetCode) {
         String data = "";
 
@@ -93,6 +107,17 @@ public class MainActivity extends AppCompatActivity {
 //        outputStream.write((byte) 2);
         return ret;
     }
+
+    public ArrayList<Integer> recievePPG() throws IOException {
+        externalThread.kill = false;
+        ArrayList<Integer> ret;
+        outputStream.write((byte) 1);
+        ret = externalThread.runPPG(inputStream, outputStream);
+        outputStream.write((byte) 2);
+        Toast.makeText(getApplicationContext(), "Size: " + ret.size(), Toast.LENGTH_SHORT).show();
+        return ret;
+    }
+
 
 //    public int heartRate() throws IOException {
 //        sendData((byte)2);
@@ -193,15 +218,19 @@ public class MainActivity extends AppCompatActivity {
 
         Button ecg = findViewById(R.id.ecgBut);
         Button temp = findViewById(R.id.tempBut);
+        Button ppg = findViewById(R.id.ppgBut);
 
         ecg.setEnabled(false);
         temp.setEnabled(false);
+        ppg.setEnabled(false);
 
         Button connect = findViewById(R.id.connectBut);
         Button camStream = findViewById(R.id.CamButton);
 
         Button send = findViewById(R.id.send);
         send.setEnabled(false);
+
+
 
         sendBox = findViewById(R.id.sendData);
         recieveBox = findViewById(R.id.recieveData);
@@ -294,6 +323,7 @@ public class MainActivity extends AppCompatActivity {
                         temp.setEnabled(true);
                         send.setEnabled(true);
                         connect.setEnabled(false);
+                        ppg.setEnabled(true);
                         try {
                             outputStream.write((byte) 2);
                         } catch (IOException e) {
@@ -370,6 +400,23 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        ppg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+//                    inputStream.skip(inputStream.available());
+                    ArrayList<Integer> ppg = recievePPG();
+//                    recieveBox.setText(ecg.toString());
+                    Intent intent = new Intent(MainActivity.this, ECGChart.class);
+                    intent.putIntegerArrayListExtra("list", ppg);
+                    startActivity(intent);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
     }
 }
 
@@ -438,9 +485,56 @@ class ExternalThread extends Thread {
                 k++;
             }
         }
-        Log.e("data", list.toString());
+//        Log.e("data", list.toString());
         data.clear();
         return list;
+    }
+
+    public ArrayList<Integer> runPPG(InputStream inputStream, OutputStream outputStream) throws IOException {
+
+        ArrayList<Integer> list = new ArrayList<Integer>();
+        inputStream.read();
+
+        ArrayList<Integer> data = new ArrayList<Integer>();
+
+        int period = 10;
+
+        while (!kill) {
+
+            data.add(inputStream.read());
+
+            if (data.size() >= 5000){
+                kill = true;
+                outputStream.write((byte) 2);
+            }
+
+        }
+        Log.e("Data", data.toString());
+
+        int k = 0;
+        while (k <= data.size() - 4) {
+            if (data.get(k) >= 0x0000 && data.get(k) <= 0x0011 && data.get(k+3) >= 0x0000 && data.get(k+3) <= 0x0011) {
+                int d = MainActivity.shifterPPG(data.get(k), data.get(k + 1), data.get(k + 2));
+                list.add(d);
+                k += 3;
+            } else {
+                k++;
+            }
+        }
+
+        data.clear();
+
+        for(int i = 0; i < list.size() - period; i++){
+//            double d = 0;
+//            for(int j = i; j < i + period - 1; j ++){
+//                d += list.get(j);
+//            }
+            Log.e("data size", String.valueOf(data.size()));
+            data.add((int) (list.get(i)+list.get(i+1)+list.get(i+2)+list.get(i+3)+list.get(i+4)+list.get(i+5)+list.get(i+6)+list.get(i+7)+list.get(i+8)+list.get(i+9)/period));
+        }
+
+        list.clear();
+        return data;
     }
 }
 

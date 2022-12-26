@@ -5,4 +5,11 @@
     <string name="heart_rate">Heart Rate:</string>
     <string name="tempreature">Tempreature:</string>
     <string name="ambient_temp">Ambient Temp:</string>
+    <string name="ppg">ppg</string>
+    <string name="_2">2</string>
+    <string name="enter_device_name">Enter Device Name:</string>
+    <string name="send">Send</string>
+    <string name="cam_strm">Cam Strm</string>
+    <string name="hc_05">HC-05</string>
+    <string name="connect">Connect</string>
 </resources>
