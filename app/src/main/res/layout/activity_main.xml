@@ -7,6 +7,17 @@
     android:padding="10dp"
     tools:context=".MainActivity">
 
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="401dp"
+        android:layout_height="180dp"
+        android:alpha="0.75"
+        app:layout_constraintBottom_toBottomOf="@+id/scrollView2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        app:srcCompat="@drawable/iconecgtrans" />
+
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
@@ -38,6 +49,7 @@
     </LinearLayout>
 
     <TableLayout
+        android:id="@+id/tableLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -80,23 +92,23 @@
 
             <Button
                 android:id="@+id/connectBut"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="match_parent"
                 android:layout_height="75dp"
                 android:layout_weight="3"
                 android:text="@string/connect"
                 android:textAlignment="center"
-                android:textSize="16sp"
-                style="?android:attr/buttonBarButtonStyle" />
+                android:textSize="16sp" />
 
             <Button
                 android:id="@+id/CamButton"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="match_parent"
                 android:layout_height="75dp"
                 android:layout_weight="3"
                 android:text="@string/cam_strm"
                 android:textAlignment="center"
-                android:textSize="16sp"
-                style="?android:attr/buttonBarButtonStyle" />
+                android:textSize="16sp" />
 
         </TableRow>
 
@@ -126,6 +138,7 @@
                 android:textColor="@color/white"
                 android:textSize="20sp"
                 tools:ignore="SpeakableTextPresentCheck" />
+
         </TableRow>
 
         <TableRow
@@ -190,23 +203,23 @@
 
             <Button
                 android:id="@+id/ecgBut"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="182dp"
                 android:layout_height="75dp"
                 android:layout_weight="3"
                 android:text="@string/ecg"
                 android:textAlignment="center"
-                android:textSize="20sp"
-                style="?android:attr/buttonBarButtonStyle" />
+                android:textSize="20sp" />
 
             <Button
                 android:id="@+id/tempBut"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="172dp"
                 android:layout_height="75dp"
                 android:layout_weight="3"
                 android:text="@string/temp"
                 android:textAlignment="center"
-                android:textSize="20sp"
-                style="?android:attr/buttonBarButtonStyle" />
+                android:textSize="20sp" />
 
             <Button
                 android:id="@+id/ppgBut"
@@ -234,5 +247,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </ScrollView>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -12,13 +12,13 @@ import com.github.mikephil.charting.data.LineDataSet;
 
 import java.util.ArrayList;
 
-public class ECGChart extends AppCompatActivity {
+public class Chart extends AppCompatActivity {
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_ecgchart);
+        setContentView(R.layout.activity_chart);
 
 //        Bundle bundle = getIntent().getExtras();
         ArrayList<Integer> list = getIntent().getIntegerArrayListExtra("list");
@@ -34,7 +34,7 @@ public class ECGChart extends AppCompatActivity {
             linevalues.add(new Entry((float) i, (float) list.get(i)));
         }
 
-        LineDataSet linedataset = new LineDataSet(linevalues, "ECG Wave Form");
+        LineDataSet linedataset = new LineDataSet(linevalues, "Wave Form");
         //We add features to our chart
         linedataset.setColor(Color.rgb(255, 0, 0));
         linedataset.setDrawCircles(false);

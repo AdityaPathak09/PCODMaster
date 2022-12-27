@@ -23,7 +23,7 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31" >
         <activity
-            android:name=".ECGChart"
+            android:name=".Chart"
             android:screenOrientation="landscape"
             android:exported="false" >
             <meta-data
