@@ -28,7 +28,8 @@ public class stream extends AppCompatActivity {
 //        System.out.println("Wifi State: " +wifiManager.getWifiState());
 //        String url = "https://Instagram.com";
 //        String url = "http://192.168.194.147/mjpeg/1";
-        String url = "http://192.168.178.203/mjpeg/1";
+//        String url = "http://192.168.178.203/mjpeg/1";
+        String url = "http://192.168.207.203/mjpeg/1";
         webView.loadUrl(url); //put url
     }
 
