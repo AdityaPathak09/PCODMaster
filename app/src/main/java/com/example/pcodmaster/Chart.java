@@ -2,6 +2,7 @@ package com.example.pcodmaster;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -34,11 +35,14 @@ public class Chart extends AppCompatActivity {
             linevalues.add(new Entry((float) i, (float) list.get(i)));
         }
 
+
+        Log.e("data size", String.valueOf(linevalues.size()));
+
         LineDataSet linedataset = new LineDataSet(linevalues, "Wave Form");
         //We add features to our chart
         linedataset.setColor(Color.rgb(255, 0, 0));
         linedataset.setDrawCircles(false);
-        linedataset.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        linedataset.setMode(LineDataSet.Mode.HORIZONTAL_BEZIER);
 
         //We connect our data to the UI Screen
         LineData data = new LineData(linedataset);
