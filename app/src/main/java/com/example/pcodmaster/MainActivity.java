@@ -268,62 +268,11 @@ public class MainActivity extends AppCompatActivity {
         Button connect = findViewById(R.id.connectBut);
         Button camStream = findViewById(R.id.CamButton);
 
-        Button send = findViewById(R.id.send);
-        send.setEnabled(false);
-
-
-        sendBox = findViewById(R.id.sendData);
-        recieveBox = findViewById(R.id.recieveData);
-
-
         TextView dispHr = findViewById(R.id.hr);
         EditText dispTemp = findViewById(R.id.temp);
         EditText dispAmbtemp = findViewById(R.id.ambtemp);
         TextView getName = findViewById(R.id.divName);
 
-
-
-        send.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-//                ArrayList<Integer> ecg = new ArrayList<Integer>();
-//                for(int i = 0; i < 100; i ++){
-//                    ecg.add((int) (100 * Math.sin((double) i)));
-//                }
-//                Toast.makeText(getApplicationContext(), ecg.toString(), Toast.LENGTH_SHORT).show();
-//
-//                Intent intent = new Intent(MainActivity.this, ECGChart.class);
-//                intent.putIntegerArrayListExtra("list", ecg);
-//                startActivity(intent);
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                byte data = Byte.parseByte(sendBox.getText().toString());
-                try {
-                    sendData(data);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//                new CountDownTimer(300, 10) {
-//                    public void onFinish() {
-//                        Toast.makeText(getApplicationContext(), "Reciving", Toast.LENGTH_SHORT).show();
-//                        try {
-//                            inputData = inputData + " " +String.valueOf(inputStream.read() & 0xff);
-//
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                        recieveBox.setText(String.valueOf(inputData));
-//                    }
-//
-//                    public void onTick(long millisUntilFinished) {
-//                        // millisUntilFinished    The amount of time until finished.
-//                    }
-//                }.start();
-
-            }
-        });
 
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
@@ -362,7 +311,6 @@ public class MainActivity extends AppCompatActivity {
                     if (connect(myDevice)) {
                         ecg.setEnabled(true);
                         temp.setEnabled(true);
-                        send.setEnabled(true);
                         connect.setEnabled(false);
                         ppg.setEnabled(true);
                         try {

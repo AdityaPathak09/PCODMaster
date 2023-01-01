@@ -12,4 +12,5 @@
     <string name="cam_strm">Cam Strm</string>
     <string name="hc_05">HC-05</string>
     <string name="connect">Connect</string>
+    <string name="todo">TODO</string>
 </resources>

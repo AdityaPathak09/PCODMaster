@@ -9,53 +9,24 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="401dp"
-        android:layout_height="180dp"
-        android:alpha="0.75"
-        app:layout_constraintBottom_toBottomOf="@+id/scrollView2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-        app:srcCompat="@drawable/iconecgtrans" />
-
-    <LinearLayout
-        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_height="150dp"
+        android:alpha="0.75"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <EditText
-            android:id="@+id/sendData"
-            android:layout_width="226dp"
-            android:layout_height="80dp"
-            android:layout_marginStart="44dp"
-            android:layout_marginTop="20dp"
-            android:layout_weight="1"
-            android:autofillHints=""
-            android:inputType="text"
-            android:text="@string/_2"
-            android:textSize="14sp" />
-
-        <Button
-            android:id="@+id/send"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:minWidth="48dp"
-            android:text="@string/send" />
-    </LinearLayout>
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/iconecgtrans"
+        android:contentDescription="@string/todo" />
 
     <TableLayout
         android:id="@+id/tableLayout"
+        android:padding="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/scrollView2">
+        app:layout_constraintTop_toBottomOf="@+id/imageView">
 
         <TableRow
             android:layout_width="wrap_content"
@@ -69,7 +40,7 @@
                 android:ems="10"
                 android:inputType="textPersonName"
                 android:text="@string/enter_device_name"
-                android:textColor="@color/white"
+                android:textColor="@color/gray"
                 android:textSize="18sp"
                 tools:ignore="TouchTargetSizeCheck" />
 
@@ -82,7 +53,8 @@
                 android:inputType="text"
                 android:text="@string/hc_05"
                 android:textAlignment="textStart"
-                android:textColor="@color/white"
+                android:textColor="@color/gray"
+                android:textColorHint="@color/gray"
                 android:textSize="20sp" />
         </TableRow>
 
@@ -124,7 +96,7 @@
                 android:ems="10"
                 android:inputType="textPersonName"
                 android:text="@string/heart_rate"
-                android:textColor="@color/white"
+                android:textColor="@color/gray"
                 android:textSize="20sp"
                 tools:ignore="TouchTargetSizeCheck" />
 
@@ -136,6 +108,7 @@
                 android:autofillHints=""
                 android:inputType="number"
                 android:textColor="@color/white"
+                android:textColorHint="@color/gray"
                 android:textSize="20sp"
                 tools:ignore="SpeakableTextPresentCheck" />
 
@@ -153,7 +126,7 @@
                 android:ems="10"
                 android:inputType="textPersonName"
                 android:text="@string/tempreature"
-                android:textColor="@color/white"
+                android:textColor="@color/gray"
                 android:textSize="20sp"
                 tools:ignore="TouchTargetSizeCheck" />
 
@@ -164,6 +137,7 @@
                 android:layout_weight="3"
                 android:autofillHints=""
                 android:inputType="text"
+                android:textColorHint="@color/gray"
                 android:textSize="20sp"
                 tools:ignore="SpeakableTextPresentCheck" />
         </TableRow>
@@ -180,7 +154,7 @@
                 android:ems="10"
                 android:inputType="textPersonName"
                 android:text="@string/ambient_temp"
-                android:textColor="@color/white"
+                android:textColor="@color/gray"
                 android:textSize="20sp"
                 tools:ignore="TouchTargetSizeCheck" />
 
@@ -191,7 +165,7 @@
                 android:layout_weight="3"
                 android:autofillHints=""
                 android:inputType="text"
-                android:textColor="@color/white"
+                android:textColorHint="@color/gray"
                 android:textSize="20sp"
                 tools:ignore="SpeakableTextPresentCheck" />
 
@@ -199,14 +173,15 @@
 
         <TableRow
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp">
 
             <Button
                 android:id="@+id/ecgBut"
                 style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="182dp"
+                android:layout_width="182sp"
                 android:layout_height="75dp"
-                android:layout_weight="3"
+                android:layout_weight="4"
                 android:text="@string/ecg"
                 android:textAlignment="center"
                 android:textSize="20sp" />
@@ -214,7 +189,7 @@
             <Button
                 android:id="@+id/tempBut"
                 style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="172dp"
+                android:layout_width="182sp"
                 android:layout_height="75dp"
                 android:layout_weight="3"
                 android:text="@string/temp"
@@ -224,7 +199,7 @@
             <Button
                 android:id="@+id/ppgBut"
                 style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="182dp"
+                android:layout_width="182sp"
                 android:layout_height="75dp"
                 android:layout_weight="3"
                 android:text="@string/ppg"
@@ -235,19 +210,16 @@
 
     </TableLayout>
 
-    <ScrollView
-        android:id="@+id/scrollView2"
-        android:layout_width="match_parent"
-        android:layout_height="109dp"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-        tools:layout_editor_absoluteX="10dp">
-
-        <TextView
-            android:id="@+id/recieveData"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </ScrollView>
-
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="sensorlifeline.com"
+        android:textColor="@color/red"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
