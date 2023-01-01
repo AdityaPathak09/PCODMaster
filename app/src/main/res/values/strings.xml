@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PCODMaster</string>
+    <string name="app_name">POCD</string>
     <string name="ecg">ECG</string>
     <string name="temp">Temp</string>
     <string name="heart_rate">Heart Rate:</string>
