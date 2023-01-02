@@ -1,5 +1,7 @@
 package com.example.pcodmaster;
 
+import static java.lang.Thread.sleep;
+
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -143,20 +145,26 @@ public class MainActivity extends AppCompatActivity {
 //        Toast.makeText(getApplicationContext(), "PacketSize: " + packetSize, Toast.LENGTH_SHORT).show();
 
         ret = externalThread.runECG(inputStream, outputStream);
-//        outputStream.write((byte) 0);
-        Toast.makeText(getApplicationContext(), "Size: " + ret.size(), Toast.LENGTH_SHORT).show();
-//        outputStream.write((byte) 0);
+        outputStream.write((byte) 4);
+//        Toast.makeText(getApplicationContext(), "Size: " + ret.size(), Toast.LENGTH_SHORT).show();
+//        outputStream.write((byte) 4);
         return ret;
     }
 
     public ArrayList<Integer> recievePPG() throws IOException {
         externalThread.kill = false;
         ArrayList<Integer> ret;
-        outputStream.write((byte) 1);
+        outputStream.write((byte) 2);
         ret = externalThread.runPPG(inputStream, outputStream);
-        outputStream.write((byte) 0);
+        outputStream.write((byte) 4);
         Toast.makeText(getApplicationContext(), "Size: " + ret.size(), Toast.LENGTH_SHORT).show();
         return ret;
+    }
+
+    public void recieveTemp() throws IOException {
+        externalThread.kill = false;
+        outputStream.write((byte) 3);
+//        outputStream.write((byte) 4);
     }
 
 
@@ -215,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         try {
-            outputStream.write((byte) 0);
+            outputStream.write((byte) 4);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -228,7 +236,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         try {
-            outputStream.write((byte) 0);
+            outputStream.write((byte) 4);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -239,7 +247,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         try {
-            outputStream.write((byte) 0);
+            outputStream.write((byte) 4);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -314,7 +322,7 @@ public class MainActivity extends AppCompatActivity {
                         connect.setEnabled(false);
                         ppg.setEnabled(true);
                         try {
-                            outputStream.write((byte) 0);
+                            outputStream.write((byte) 4);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -325,7 +333,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
 
         camStream.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -392,50 +399,16 @@ public class MainActivity extends AppCompatActivity {
         temp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 externalThread.kill = true;
-
-
-
-//                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-//                StrictMode.setThreadPolicy(policy);
-//                byte addr[]={(byte) 192, (byte) 168, 69, (byte) 203};
-//                try {
-////                    InetAddress inetAddress = InetAddress.getByAddress(addr);
-//                    InetAddress inetAddress = InetAddress.getByName("http://sensorlifeline.com");
-//
-//                    Log.e("mac",inetAddress.getHostAddress());
-//                } catch (UnknownHostException e) {
-//                    e.printStackTrace();
-//                }
-
-//                try {
-//                    sendData((byte)2);
-//
-//                    String temps;
-//
-//                    for(int i = 0; i < 9; i ++) //simple delay for 9 seconds
-//                    {
-//                        try {
-//                            Thread.sleep(1000);
-//                        } catch (InterruptedException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//
-//                    String temp = recieveData(0);
-//
-//                    String[] parts = temp.split(",");
-//                    temp = parts[0];
-//                    temps = parts[1];
-//
-//                    dispTemp.setText(temp);
-//                    dispAmbtemp.setText(temps);
-//                    Toast.makeText(getApplicationContext(), "done", Toast.LENGTH_SHORT).show();
-//
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
+                try {
+                    recieveTemp();
+                    sleep(5000);
+                    outputStream.write((byte) 4);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -468,6 +441,7 @@ public class MainActivity extends AppCompatActivity {
 
         public ArrayList<Integer> runECG(InputStream inputStream, OutputStream outputStream) throws IOException {
 
+            int sampleSize = 3000;
             ArrayList<Integer> list = new ArrayList<Integer>();
 //        inputStream.read();
 //
@@ -484,16 +458,19 @@ public class MainActivity extends AppCompatActivity {
 //                for(int i = 0; i < packetSize; i ++){
 //                    data[i] = (int) inputStream.read();
 //                }
-
                 data.add(inputStream.read());
+
+                Log.e("data", data.toString());
+
+                if((sampleSize - data.size()) % 1000 == 0){
+                    Toast.makeText(getApplicationContext(), String.valueOf((sampleSize - data.size()) / 1000), Toast.LENGTH_SHORT ).show();
+                }
 //            Log.e("ddd", data.toString());
 //            Log.e("size: ", String.valueOf(data.size()));
-                if (data.size() >= 7000) {
+                if (data.size() >= sampleSize) {
                     kill = true;
-                    outputStream.write((byte) 0);
+                    outputStream.write((byte) 4);
                 }
-
-
 //                int k = 0;
 //                for(int i = 0; i < packetSize; i+=3){
 //                    list.add(mainActivity.shifter(data[i], data[i+1], data[i+2]));
@@ -517,6 +494,7 @@ public class MainActivity extends AppCompatActivity {
 //                        kill = true;
             }
 
+            Log.e("data", data.toString());
 //        Log.e("data", data.toString());
 
 
@@ -603,6 +581,7 @@ public class MainActivity extends AppCompatActivity {
 
         public ArrayList<Integer> runPPG(InputStream inputStream, OutputStream outputStream) throws IOException {
 
+            int sampleSize = 10000;
             ArrayList<Integer> list = new ArrayList<Integer>();
             inputStream.read();
 
@@ -613,13 +592,17 @@ public class MainActivity extends AppCompatActivity {
 
                 data.add(inputStream.read());
 
-                if (data.size() >= 10000) {
-                    kill = true;
-                    outputStream.write((byte) 0);
+//                Log.e("data", data.toString());
+
+                if((sampleSize - data.size()) % 1000 == 0){
+                    Toast.makeText(getApplicationContext(), String.valueOf((sampleSize - data.size()) / 1000), Toast.LENGTH_SHORT ).show();
                 }
 
+                if (data.size() >= sampleSize) {
+                    kill = true;
+                    outputStream.write((byte) 4);
+                }
             }
-            Log.e("Data", data.toString());
 
             int k = 0;
             while (k <= data.size() - 4) {
@@ -644,6 +627,8 @@ public class MainActivity extends AppCompatActivity {
                 data.add((int) (d / period));
 //            data.add((list.get(i)+list.get(i+1)+list.get(i+2)+list.get(i+3)+list.get(i+4)+list.get(i+5)+list.get(i+6))/7);
             }
+
+//            Log.e("Data", data.toString());
 
             list.clear();
             return data;

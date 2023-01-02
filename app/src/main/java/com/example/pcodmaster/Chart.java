@@ -1,5 +1,7 @@
 package com.example.pcodmaster;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,6 +13,7 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class Chart extends AppCompatActivity {
@@ -51,5 +54,30 @@ public class Chart extends AppCompatActivity {
         lineChart.setData(data);
 
     }
+
+    @SuppressLint("MissingPermission")
+    @Override
+    protected void onPause() {
+        Intent intent = new Intent(Chart.this, MainActivity.class);
+        startActivity(intent);
+        super.onPause();
+    }
+
+    @SuppressLint("MissingPermission")
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Intent intent = new Intent(Chart.this, MainActivity.class);
+        startActivity(intent);
+    }
+
+    @SuppressLint("MissingPermission")
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Intent intent = new Intent(Chart.this, MainActivity.class);
+        startActivity(intent);
+    }
+
 }
 
