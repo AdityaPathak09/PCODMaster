@@ -172,10 +172,11 @@ public class LiveGraph extends AppCompatActivity {
         xl.setTextColor(Color.BLACK);
         xl.setDrawGridLines(true);
         xl.setAvoidFirstLastClipping(true);
-        xl.setEnabled(true);
+        xl.setEnabled(false);
 
         YAxis leftAxis = lineChart.getAxisLeft();
         leftAxis.setTextColor(Color.BLACK);
+        leftAxis.setEnabled(false);
 //        leftAxis.setAxisMaximum(TOTAL_MEMORY);
 //        leftAxis.setAxisMinimum(0f);
         leftAxis.setDrawGridLines(true);
@@ -278,7 +279,11 @@ public class LiveGraph extends AppCompatActivity {
         Legend l = lineChart.getLegend();
 
         // modify the legend ...
+//        l.setDirection(Legend.LegendDirection.LEFT_TO_RIGHT);
         l.setForm(Legend.LegendForm.CIRCLE);
+        l.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
+        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
+//        l.setVerticalAlignment(Legend.LegendVerticalAlignment.CENTER);
         l.setTextColor(Color.BLACK);
     }
 
