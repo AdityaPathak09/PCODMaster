@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" >
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -12,7 +12,6 @@
     <application
         android:allowBackup="true"
         android:alwaysRetainTaskState="true"
-        android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@drawable/iconecg"
         android:icon="@drawable/iconecg"
         android:label="@string/app_name"
@@ -21,11 +20,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PCODMaster"
         android:usesCleartextTraffic="true"
-        tools:targetApi="31" >
+        tools:targetApi="31">
+        <activity
+            android:name=".LiveGraph"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
         <activity
             android:name=".Chart"
-            android:screenOrientation="landscape"
-            android:exported="false" >
+            android:exported="false"
+            android:screenOrientation="landscape">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -36,7 +42,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

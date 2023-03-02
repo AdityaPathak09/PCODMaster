@@ -51,7 +51,7 @@
                 android:layout_weight="3"
                 android:autofillHints=""
                 android:inputType="text"
-                android:text="@string/hc_05"
+                android:text="@string/continous_monitoring"
                 android:textAlignment="textStart"
                 android:textColor="@color/gray"
                 android:textColorHint="@color/gray"

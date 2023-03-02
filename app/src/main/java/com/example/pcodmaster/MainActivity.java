@@ -209,6 +209,8 @@ public class MainActivity extends AppCompatActivity {
         try {
             outputStream = bluetoothSocket.getOutputStream();
             inputStream = bluetoothSocket.getInputStream();
+            Helper.getInstance().setOutputStreamer(outputStream);
+            Helper.getInstance().setInputStreamer(inputStream);
             ret = true;
 
         } catch (IOException e) {
@@ -382,17 +384,13 @@ public class MainActivity extends AppCompatActivity {
         ecg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                try {
-//                    inputStream.skip(inputStream.available());
-                    ArrayList<Integer> ecg = recieveECG();
+                //                    inputStream.skip(inputStream.available());
+//                    ArrayList<Integer> ecg = recieveECG();
 //                    recieveBox.setText(ecg.toString());
-                    Intent intent = new Intent(MainActivity.this, Chart.class);
-                    intent.putIntegerArrayListExtra("list", ecg);
-                    startActivity(intent);
+//                    Intent intent = new Intent(MainActivity.this, Chart.class);
+                Intent intent = new Intent(MainActivity.this, LiveGraph.class);
+                startActivity(intent);
 
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
             }
         });
 
@@ -441,7 +439,7 @@ public class MainActivity extends AppCompatActivity {
 
         public ArrayList<Integer> runECG(InputStream inputStream, OutputStream outputStream) throws IOException {
 
-            int sampleSize = 3000;
+            int sampleSize = 12000;
             ArrayList<Integer> list = new ArrayList<Integer>();
 //        inputStream.read();
 //
@@ -592,7 +590,7 @@ public class MainActivity extends AppCompatActivity {
 
                 data.add(inputStream.read());
 
-//                Log.e("data", data.toString());
+                Log.e("data", data.toString());
 
                 if((sampleSize - data.size()) % 1000 == 0){
                     Toast.makeText(getApplicationContext(), String.valueOf((sampleSize - data.size()) / 1000), Toast.LENGTH_SHORT ).show();

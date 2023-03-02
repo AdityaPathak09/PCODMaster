@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -14,17 +15,41 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 public class Chart extends AppCompatActivity {
 
+    InputStream inputStream;
+
+    public String recieveData(int packetCode) {
+        String data = "";
+
+        try {
+//            inputStream.skip(inputStream.available());
+            int size = inputStream.read();
+
+            for (int i = 0; i < size; i++) {
+                data = data + (char) inputStream.read();
+            }
+            Toast.makeText(getApplicationContext(), "Size: " + size, Toast.LENGTH_SHORT).show();
+
+        } catch (IOException e) {
+            Log.e("Packet Error", "Packet Not Recieved: " + packetCode);
+            e.printStackTrace();
+        }
+
+        return data;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chart);
 
-//        Bundle bundle = getIntent().getExtras();
+        Bundle bundle = getIntent().getExtras();
+        inputStream = bundle.getParcelable("inputStream");
+
         ArrayList<Integer> list = getIntent().getIntegerArrayListExtra("list");
 
 //        Toast.makeText(getApplicationContext(), list.toString(), Toast.LENGTH_SHORT).show();
